@@ -240,18 +240,31 @@
 
         /* Notification styles */
         .notification {
-            position: fixed;
-            top: 100px;
-            right: 20px;
+            position: relative;
+            margin-bottom: 10px;
             background: #e74c3c;
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            max-width: 280px;
+            white-space: pre-line;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease forwards;
         }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 
         .notification.show {
             transform: translateX(0);
@@ -295,6 +308,20 @@
                 transform: translateY(0);
             }
         }
+
+        @keyframes blink-red-green {
+            0% { background-color: red; color: white; }
+            50% { background-color: white; color: black; }
+            100% { background-color: red; color: white; }
+        }
+
+        .blinking {
+            animation: blink-red-green 1s infinite;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
     </style>
 </head>
 <body>
@@ -376,9 +403,13 @@
     </div>
 
     <!-- Notification element -->
-    <div id="notification" class="notification">
+    {{-- <div id="notification" class="notification">
         <span id="notification-text"></span>
-    </div>
+    </div> --}}
+
+    <!-- Notification container -->
+    <div id="notification-container" style="position: fixed; top: 100px; right: 20px; z-index: 1000;"></div>
+
 
     <script>
         let countdown = 30;
@@ -453,25 +484,32 @@
         }
 
         // Show notification
-        function showNotification(message, type = 'error') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
-            
-            notificationText.textContent = message;
-            notification.className = 'notification show';
-            
+        function showNotification(message, type = 'error', timeout = 5000) {
+            const container = document.getElementById('notification-container');
+
+            const notif = document.createElement('div');
+            notif.className = 'notification show';
+
             if (type === 'error') {
-                notification.style.background = '#e74c3c';
+                notif.style.background = '#e74c3c';
             } else if (type === 'warning') {
-                notification.style.background = '#f39c12';
+                notif.style.background = '#f39c12';
             } else {
-                notification.style.background = '#2ecc71';
+                notif.style.background = '#2ecc71';
             }
-            
+
+            notif.innerText = message; // agar \n jadi baris baru
+
+
+            container.appendChild(notif);
+
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
+                notif.classList.remove('show');
+                notif.style.opacity = '0';
+                setTimeout(() => container.removeChild(notif), 500);
+            }, timeout);
         }
+
 
         // Update connection status
         function updateConnectionStatus(connected, message = '') {
@@ -530,7 +568,7 @@
             const tbody = document.getElementById('monitors-tbody');
             tbody.innerHTML = '';
 
-            let hasDownMonitor = false;
+            let downMonitors = [];
 
             if (data.monitors.length === 0) {
                 const row = document.createElement('tr');
@@ -547,10 +585,9 @@
                     statusClass = 'status-up';
                 } else if (monitor.status === 0) {
                     statusClass = 'status-down';
-                    hasDownMonitor = true;
-                } else {
-                    statusClass = 'status-paused';
+                    downMonitors.push(monitor.friendly_name);
                 }
+
 
                 // Generate cells for last 7 days uptime
                 let last7DaysCells = '';
@@ -566,9 +603,10 @@
 
                 // Average 7 days cell
                 const avgUptimeClass = getUptimeClass(monitor.average_7_days);
-
+                const blinkClass = monitor.status === 0 ? 'blinking' : '';
+                
                 row.innerHTML = `
-                    <td>
+                    <td class="${blinkClass}">
                         <span class="status-indicator ${statusClass}"></span>
                         ${monitor.friendly_name}
                     </td>
@@ -578,14 +616,18 @@
                     <td>${monitor.type}</td>
                     ${last7DaysCells}
                 `;
+
                 
                 tbody.appendChild(row);
             });
 
             // Show notification if there are down monitors
-            if (hasDownMonitor) {
-                showNotification('⚠️ Warning! Some monitors are DOWN.', 'warning');
+            if (downMonitors.length > 0) {
+                downMonitors.forEach(name => {
+                    showNotification(`🔴 Monitor "${name}" is DOWN!`, 'warning');
+                });
             }
+
         }
 
         // Initialize
