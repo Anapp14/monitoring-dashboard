@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Models\MonitoringRecord;
 
 class MonitoringController extends Controller
 {
@@ -60,6 +61,7 @@ class MonitoringController extends Controller
             $dateRange = $this->generateDateRange(7);
             $dates = array_column($dateRange, 'display');
 
+           // Tambahan dalam foreach ($monitorList as $monitor)
             foreach ($monitorList as $monitor) {
                 $id = $monitor['id'];
                 $name = $monitor['name'];
@@ -68,16 +70,13 @@ class MonitoringController extends Controller
 
                 Log::info("Processing monitor: {$name} (ID: {$id})");
 
-                // Get latest status with better validation
                 $latest = $this->getLatestHeartbeat($heartbeats);
                 $status = $latest['status'] ?? 2;
                 $ping = $latest['ping'] ?? null;
                 $time = $latest['time'] ?? null;
 
-                // Update summary with more status types
                 $this->updateSummary($summary, $status);
 
-                // Calculate uptime data with improved logic
                 $uptimeData = $this->calculateUptimeData($id, $uptimeList, $dateRange);
 
                 Log::info("Monitor {$name}: Average 7 days = {$uptimeData['average']}%");
@@ -92,9 +91,33 @@ class MonitoringController extends Controller
                     'time' => $time,
                     'last_7_days' => $uptimeData['daily'],
                     'average_7_days' => $uptimeData['average'],
-                    'data_quality' => $uptimeData['quality'] // Info tentang kualitas data
+                    'data_quality' => $uptimeData['quality']
                 ];
+
+                // ✅ Tambahan: Simpan data ke DB
+                $today = Carbon::today()->format('Y-m-d');
+                $todayUptime = $uptimeData['daily'][0]['raw_value'] ?? null;
+
+                if ($todayUptime !== null) {
+                    MonitoringRecord::updateOrCreate(
+                        [
+                            'monitor_id' => $id,
+                            'date' => $today,
+                        ],
+                        [
+                            'name' => $name,
+                            'type' => $type,
+                            'uptime' => round($todayUptime * 100, 2),
+                        ]
+                    );
+                }
+
+                // ✅ Tambahan: Hapus data lama (> 7 hari)
+                MonitoringRecord::where('monitor_id', $id)
+                    ->where('date', '<', Carbon::today()->subDays(6)->format('Y-m-d'))
+                    ->delete();
             }
+
 
             return response()->json([
                 'success' => true,
