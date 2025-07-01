@@ -31,8 +31,12 @@ Route::get('/api/test', function () {
     return $result;
 }
 
-$configUrl = 'https://uptimekuma.ainosi.com/api/status-page/demo';
-$heartbeatUrl = 'https://uptimekuma.ainosi.com/api/status-page/heartbeat/demo';
+// $configUrl = 'https://uptimekuma.ainosi.com/api/status-page/demo';
+// $heartbeatUrl = 'https://uptimekuma.ainosi.com/api/status-page/heartbeat/demo';
+
+// testing
+$configUrl = 'http://10.10.10.110:3001/api/status-page/rumah';
+$heartbeatUrl = 'http://10.10.10.110:3001/api/status-page/heartbeat/rumah';
 
 $configData = json_decode(file_get_contents($configUrl), true);
 $heartbeatData = json_decode(file_get_contents($heartbeatUrl), true);

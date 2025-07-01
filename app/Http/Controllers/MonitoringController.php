@@ -80,6 +80,39 @@ class MonitoringController extends Controller
                 $uptimeData = $this->calculateUptimeData($id, $uptimeList, $dateRange);
 
                 Log::info("Monitor {$name}: Average 7 days = {$uptimeData['average']}%");
+                // Ambil data dari DB untuk 7 hari terakhir berdasarkan monitor_id
+                // $past7Days = MonitoringRecord::where('monitor_id', $id)
+                //     ->whereBetween('date', [
+                //         Carbon::today()->subDays(6)->format('Y-m-d'),
+                //         Carbon::today()->format('Y-m-d')
+                //     ])
+                //     ->orderBy('date', 'desc') // urutkan dari hari ini ke belakang
+                //     ->get()
+                //     ->map(function ($record) {
+                //         return [
+                //             'date' => Carbon::parse($record->date)->format('d M'),
+                //             'uptime' => $record->uptime,
+                //             'status' => 'from_db',
+                //             'raw_value' => $record->uptime / 100,
+                //         ];
+                //     })->toArray();
+
+                // // Hitung rata-rata uptime dari DB
+                // $average = count($past7Days) > 0 ? round(array_sum(array_column($past7Days, 'uptime')) / count($past7Days), 2) : 0;
+
+                // $monitors[] = [
+                //     'id' => $id,
+                //     'friendly_name' => $name,
+                //     'status' => $status,
+                //     'status_text' => $this->getStatusText($status),
+                //     'type' => $type,
+                //     'ping' => $ping,
+                //     'time' => $time,
+                //     'last_7_days' => $past7Days, // ✅ diubah ke dari database
+                //     'average_7_days' => $average, // ✅ dihitung ulang dari database
+                //     'data_quality' => $uptimeData['quality'] // ini tetap
+                // ];
+
 
                 $monitors[] = [
                     'id' => $id,
