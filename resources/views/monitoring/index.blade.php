@@ -432,7 +432,7 @@
         function autoScroll() {
             const container = document.getElementById('tableContainer');
             const scrollStep = 1;
-            const scrollDelay = 50;
+            const scrollDelay = 22;
             let scrolling = true;
 
             const scroll = () => {

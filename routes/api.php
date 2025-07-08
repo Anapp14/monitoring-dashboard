@@ -25,3 +25,5 @@ Route::middleware('web')->group(function () {
 // Alternative route if using different middleware
 Route::get('/monitoring-data', [MonitoringController::class, 'getMonitoringData'])
     ->middleware(['web']);
+
+Route::get('/admin-monitoring-data', [MonitoringController::class, 'getAdminMonitoringData'])->name('api.admin.monitoring.data');

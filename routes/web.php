@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MonitoringController::class, 'index'])->name('monitoring.index');
 Route::get('/api/monitoring', [MonitoringController::class, 'getMonitoringData'])->name('monitoring.data');
+//Admin dashboard
+Route::get('/admin-dashboard', [MonitoringController::class, 'adminDashboard'])->name('monitoring.admin');
 Route::get('/api/test', function () {
     function groupByDate($heartbeats) {
     $result = [];

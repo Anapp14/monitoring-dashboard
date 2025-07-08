@@ -26,6 +26,119 @@ class MonitoringController extends Controller
         return view('monitoring.index');
     }
 
+    // New method for admin dashboard
+    public function adminDashboard()
+    {
+        return view('monitoring.admin');
+    }
+
+    // New method for admin dashboard API
+    public function getAdminMonitoringData()
+    {
+        try {
+            $configResponse = $this->fetchWithRetry($this->configUrl);
+            $heartbeatResponse = $this->fetchWithRetry($this->heartbeatUrl);
+
+            if (!$configResponse || !$heartbeatResponse) {
+                throw new \Exception('Failed to fetch monitoring data from Uptime Kuma');
+            }
+
+            $configData = json_decode($configResponse, true);
+            $heartbeatData = json_decode($heartbeatResponse, true);
+
+            if (!isset($configData['publicGroupList'][0]['monitorList'])) {
+                throw new \Exception('Invalid config data structure');
+            }
+
+            if (!isset($heartbeatData['heartbeatList'])) {
+                throw new \Exception('Invalid heartbeat data structure');
+            }
+
+            $monitorList = $configData['publicGroupList'][0]['monitorList'];
+            $heartbeatList = $heartbeatData['heartbeatList'];
+
+            $summary = ['total' => 0, 'up' => 0, 'down' => 0, 'paused' => 0, 'maintenance' => 0];
+            $monitors = [];
+
+            // foreach ($monitorList as $monitor) {
+            //     $id = $monitor['id'];
+            //     $name = $monitor['name'];
+            //     $type = $monitor['type'];
+            //     $heartbeats = $heartbeatList[$id] ?? [];
+
+            //     $latest = $this->getLatestHeartbeat($heartbeats);
+            //     $status = $latest['status'] ?? 2;
+            //     $ping = $latest['ping'] ?? null;
+            //     $time = $latest['time'] ?? null;
+
+            //     $this->updateSummary($summary, $status);
+
+            //     $monitors[] = [
+            //         'id' => $id,
+            //         'name' => $name,
+            //         'status' => $status,
+            //         'status_text' => $this->getStatusText($status),
+            //         'type' => $type,
+            //         'ping' => $ping,
+            //         'time' => $time,
+            //         'last_updated' => $time ? Carbon::parse($time)->format('H:i:s') : 'Unknown'
+            //     ];
+            // }
+
+            foreach ($monitorList as $monitor) {
+                $id = $monitor['id'];
+                $name = $monitor['name'];
+                $type = $monitor['type'];
+                $heartbeats = $heartbeatList[$id] ?? [];
+
+                $latest = $this->getLatestHeartbeat($heartbeats);
+                $status = $latest['status'] ?? 2;
+                $ping = $latest['ping'] ?? null;
+                $time = $latest['time'] ?? null;
+
+                // 🧠 Hitung uptime 7 hari (gunakan fungsi yg sudah ada)
+                $uptimeData = $this->calculateUptimeData($id, $heartbeatData['uptimeList'], $this->generateDateRange(7));
+
+                // 🔥 Skip jika rata-rata 7 hari adalah 0%
+                if ($uptimeData['average'] <= 0) {
+                    continue;
+                }
+
+                $this->updateSummary($summary, $status);
+
+                $monitors[] = [
+                    'id' => $id,
+                    'name' => $name,
+                    'status' => $status,
+                    'status_text' => $this->getStatusText($status),
+                    'type' => $type,
+                    'ping' => $ping,
+                    'time' => $time,
+                    'last_updated' => $time ? Carbon::parse($time)->format('H:i:s') : 'Unknown',
+                ];
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'summary' => $summary,
+                    'monitors' => $monitors,
+                    'last_updated' => Carbon::now()->toISOString()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Admin Monitoring Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Internal server error.',
+                'error_code' => 'ADMIN_MONITORING_ERROR'
+            ], 500);
+        }
+    }
+
     public function getMonitoringData()
     {
         try {
@@ -61,7 +174,6 @@ class MonitoringController extends Controller
             $dateRange = $this->generateDateRange(7);
             $dates = array_column($dateRange, 'display');
 
-           // Tambahan dalam foreach ($monitorList as $monitor)
             foreach ($monitorList as $monitor) {
                 $id = $monitor['id'];
                 $name = $monitor['name'];
@@ -75,44 +187,17 @@ class MonitoringController extends Controller
                 $ping = $latest['ping'] ?? null;
                 $time = $latest['time'] ?? null;
 
-                $this->updateSummary($summary, $status);
-
                 $uptimeData = $this->calculateUptimeData($id, $uptimeList, $dateRange);
 
                 Log::info("Monitor {$name}: Average 7 days = {$uptimeData['average']}%");
-                // Ambil data dari DB untuk 7 hari terakhir berdasarkan monitor_id
-                // $past7Days = MonitoringRecord::where('monitor_id', $id)
-                //     ->whereBetween('date', [
-                //         Carbon::today()->subDays(6)->format('Y-m-d'),
-                //         Carbon::today()->format('Y-m-d')
-                //     ])
-                //     ->orderBy('date', 'desc') // urutkan dari hari ini ke belakang
-                //     ->get()
-                //     ->map(function ($record) {
-                //         return [
-                //             'date' => Carbon::parse($record->date)->format('d M'),
-                //             'uptime' => $record->uptime,
-                //             'status' => 'from_db',
-                //             'raw_value' => $record->uptime / 100,
-                //         ];
-                //     })->toArray();
 
-                // // Hitung rata-rata uptime dari DB
-                // $average = count($past7Days) > 0 ? round(array_sum(array_column($past7Days, 'uptime')) / count($past7Days), 2) : 0;
+                // 🔥 Filter out monitors with 0% average uptime
+                if ($uptimeData['average'] <= 0) {
+                    Log::info("Monitor {$name}: Skipping due to 0% average uptime");
+                    continue;
+                }
 
-                // $monitors[] = [
-                //     'id' => $id,
-                //     'friendly_name' => $name,
-                //     'status' => $status,
-                //     'status_text' => $this->getStatusText($status),
-                //     'type' => $type,
-                //     'ping' => $ping,
-                //     'time' => $time,
-                //     'last_7_days' => $past7Days, // ✅ diubah ke dari database
-                //     'average_7_days' => $average, // ✅ dihitung ulang dari database
-                //     'data_quality' => $uptimeData['quality'] // ini tetap
-                // ];
-
+                $this->updateSummary($summary, $status);
 
                 $monitors[] = [
                     'id' => $id,
@@ -150,7 +235,6 @@ class MonitoringController extends Controller
                     ->where('date', '<', Carbon::today()->subDays(6)->format('Y-m-d'))
                     ->delete();
             }
-
 
             return response()->json([
                 'success' => true,
