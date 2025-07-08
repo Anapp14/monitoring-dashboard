@@ -44,10 +44,36 @@
         .refresh-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color:rgb(0, 0, 0);
-            font-size: 17px;
+            gap: 16px; /* Tambahkan spasi antar elemen */
+            background: rgb(33, 34, 34);
+            border-radius: 6px;
+            padding: 8px 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px; /* Jarak antar elemen */
+        }
+
+        .refresh-text {
+            background: rgb(33, 34, 34);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: bold;
+        }
+
+        .back-btn {
+            background: rgb(33, 34, 34);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s ease;
         }
 
         .refresh-btn {
@@ -92,8 +118,8 @@
             font-weight: 500;
         }
 
-        .stat-card.total .stat-number { color: #3498db; }
-        .stat-card.up .stat-number { color: #27ae60; }
+        .stat-card.total .stat-number { color:rgb(0, 0, 0); }
+        .stat-card.up .stat-number { color:rgb(0, 0, 0); }
         .stat-card.down .stat-number { color: #e74c3c; }
         .stat-card.paused .stat-number { color: #95a5a6; }
 
@@ -323,8 +349,8 @@
     <div class="container">
         <div class="header">
             <h1>Admin Dashboard</h1>
-            <div class="refresh-info">
-                <span>Refreshing in: <span id="countdown">30</span>s</span>
+            <div class="header-actions">
+                <div class="refresh-text">Refreshing in: <span id="countdown">30</span>s</div>
                 <a href="/" class="back-btn">Back to Dashboard</a>
             </div>
         </div>
