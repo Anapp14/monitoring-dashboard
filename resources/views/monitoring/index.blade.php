@@ -6,6 +6,16 @@
     <title>AINO | System Monitoring - Uptime Kuma</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
+        .dashboard-link {
+            background:rgb(94, 95, 96);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -322,6 +332,12 @@
             border-radius: 6px;
         }
 
+        .right-tools {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
     </style>
 </head>
 <body>
@@ -330,11 +346,15 @@
             <h1>AINO</h1>
             <p>System Monitoring - Uptime Kuma</p>
         </div>
-        <div class="refresh-timer">
-            <span>Refreshing in</span>
-            <span id="countdown">30</span>
-            <span>secs</span>
+        <div class="right-tools">
+            <div class="refresh-timer">
+                <span>Refreshing in</span>
+                <span id="countdown">30</span>
+                <span>secs</span>
+            </div>
+            <a href="/admin-dashboard" class="dashboard-link">Admin Dashboard</a>
         </div>
+
     </div>
 
     <div class="container">

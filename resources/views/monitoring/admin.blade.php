@@ -306,6 +306,17 @@
             }
         }
 
+        .back-btn {
+            background:rgb(33, 34, 34);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
     </style>
 </head>
 <body>
@@ -314,7 +325,7 @@
             <h1>Admin Dashboard</h1>
             <div class="refresh-info">
                 <span>Refreshing in: <span id="countdown">30</span>s</span>
-                {{-- <button class="refresh-btn" onclick="fetchMonitorData()">Refresh Now</button> --}}
+                <a href="/" class="back-btn">Back to Dashboard</a>
             </div>
         </div>
 
