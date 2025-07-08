@@ -359,16 +359,15 @@ class MonitoringController extends Controller
         }
     }
 
-    /**
-     * Calculate uptime data with proper validation (no fallback to avoid duplicate data)
-     */
+    // Calculate uptime data with database fallback
+    
     private function calculateUptimeData($monitorId, $uptimeList, $dateRange)
     {
         $dailyData = [];
         $validUptimes = [];
         $missingDataCount = 0;
 
-        // Find all uptime keys for this monitor
+        // Find all uptime keys for this monitor from API
         $monitorUptimeKeys = array_filter(array_keys($uptimeList), function($key) use ($monitorId) {
             return strpos($key, $monitorId . '_') === 0;
         });
@@ -380,6 +379,7 @@ class MonitoringController extends Controller
             $dayIndices[] = $dayIndex;
         }
 
+        $maxDayIndex = 0;
         if (!empty($dayIndices)) {
             rsort($dayIndices); // Sort descending to get latest first
             $maxDayIndex = max($dayIndices);
@@ -387,35 +387,56 @@ class MonitoringController extends Controller
             Log::info("Monitor {$monitorId}: Found day indices: " . implode(', ', $dayIndices));
             Log::info("Monitor {$monitorId}: Max day index: {$maxDayIndex}");
         } else {
-            Log::warning("Monitor {$monitorId}: No uptime data found");
-            $maxDayIndex = 0;
+            Log::warning("Monitor {$monitorId}: No uptime data found in API");
         }
 
         // Process each day in the date range
         foreach ($dateRange as $dateInfo) {
             $dayOffset = $dateInfo['day_offset'];
             $displayDate = $dateInfo['display'];
+            $dateString = $dateInfo['full']; // Y-m-d format
             
-            // Calculate expected day index
+            // Calculate expected day index for API
             $expectedDayIndex = $maxDayIndex - $dayOffset;
             $uptimeKey = $monitorId . '_' . $expectedDayIndex;
             
             $uptimeValue = null;
             $dataStatus = 'missing';
+            $dataSource = 'none';
             
+            // 1. Try to get from API first
             if (isset($uptimeList[$uptimeKey])) {
                 $uptimeValue = $uptimeList[$uptimeKey];
                 $dataStatus = 'available';
+                $dataSource = 'api';
                 
-                if ($uptimeValue > 0) {
-                    $validUptimes[] = $uptimeValue;
-                }
+                Log::info("Monitor {$monitorId}: Using API data for {$dateString} = {$uptimeValue}");
             } else {
-                // Don't use fallback data - show actual missing data as 0
-                $uptimeValue = 0;
-                $dataStatus = 'missing';
-                $missingDataCount++;
-                Log::warning("Monitor {$monitorId}: Missing data for day {$expectedDayIndex} (key: {$uptimeKey})");
+                // 2. Fallback to database if API data not available
+                $dbRecord = MonitoringRecord::where('monitor_id', $monitorId)
+                    ->where('date', $dateString)
+                    ->first();
+                    
+                if ($dbRecord) {
+                    $uptimeValue = $dbRecord->uptime / 100; // Convert percentage back to decimal
+                    $dataStatus = 'available';
+                    $dataSource = 'database';
+                    
+                    Log::info("Monitor {$monitorId}: Using DB data for {$dateString} = {$uptimeValue} (from {$dbRecord->uptime}%)");
+                } else {
+                    // 3. No data available anywhere
+                    $uptimeValue = 0;
+                    $dataStatus = 'missing';
+                    $dataSource = 'none';
+                    $missingDataCount++;
+                    
+                    Log::warning("Monitor {$monitorId}: No data found for {$dateString} (API key: {$uptimeKey})");
+                }
+            }
+
+            // Only count as valid uptime if > 0
+            if ($uptimeValue > 0) {
+                $validUptimes[] = $uptimeValue;
             }
 
             $uptimePercent = round($uptimeValue * 100, 2);
@@ -424,6 +445,7 @@ class MonitoringController extends Controller
                 'date' => $displayDate,
                 'uptime' => $uptimePercent,
                 'status' => $dataStatus,
+                'source' => $dataSource, // Track data source
                 'raw_value' => $uptimeValue
             ];
         }
@@ -436,18 +458,36 @@ class MonitoringController extends Controller
 
         // Determine data quality
         $totalDays = count($dateRange);
+        $availableDays = $totalDays - $missingDataCount;
         $dataQuality = [
             'missing_days' => $missingDataCount,
-            'available_days' => $totalDays - $missingDataCount,
-            'quality_score' => round((($totalDays - $missingDataCount) / $totalDays) * 100, 1),
-            'reliable' => $missingDataCount <= 1 // Consider reliable if missing <= 1 day
+            'available_days' => $availableDays,
+            'quality_score' => round(($availableDays / $totalDays) * 100, 1),
+            'reliable' => $missingDataCount <= 1, // Consider reliable if missing <= 1 day
+            'sources' => $this->getDataSourceSummary($dailyData)
         ];
+
+        Log::info("Monitor {$monitorId}: Final average = {$average}% (from {$availableDays}/{$totalDays} days)");
 
         return [
             'daily' => $dailyData,
             'average' => $average,
             'quality' => $dataQuality
         ];
+    }
+
+    /**
+     * Get summary of data sources used
+     */
+    private function getDataSourceSummary($dailyData)
+    {
+        $sources = ['api' => 0, 'database' => 0, 'none' => 0];
+        
+        foreach ($dailyData as $day) {
+            $sources[$day['source']]++;
+        }
+        
+        return $sources;
     }
 
     /**
