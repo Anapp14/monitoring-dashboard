@@ -81,7 +81,7 @@
 
         .stat-card {
             background: white;
-            padding: 0.8rem;
+            padding: 0.2rem;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -90,8 +90,8 @@
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 10px;
             display: flex;
             align-items: center;
