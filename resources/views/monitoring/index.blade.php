@@ -63,7 +63,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 0.5rem 0.5rem;
             height: calc(100vh - 80px);
