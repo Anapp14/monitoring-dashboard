@@ -35,6 +35,7 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             padding: 1rem;
+            padding-top: 0.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -63,7 +64,7 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0.5rem 0.5rem;
             height: calc(100vh - 80px);
             display: flex;
             flex-direction: column;
@@ -72,8 +73,8 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
             flex-shrink: 0;
         }
 
