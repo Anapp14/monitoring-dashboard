@@ -22,6 +22,9 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 100px;
         }
 
         .header {
@@ -33,6 +36,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            width: 100%;
         }
 
         .header h1 {

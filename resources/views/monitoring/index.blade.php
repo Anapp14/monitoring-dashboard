@@ -36,6 +36,7 @@
             backdrop-filter: blur(10px);
             padding: 1rem;
             padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -58,7 +59,7 @@
             gap: 10px;
             background: rgba(255, 255, 255, 0.2);
             padding: 0.5rem 1rem;
-            border-radius: 20px;
+            border-radius: 8px;
         }
 
         .container {
@@ -80,7 +81,7 @@
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
+            padding: 0.8rem;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -101,7 +102,7 @@
 
         .stat-icon.total { background: #3498db; }
         .stat-icon.up { background: #2ecc71; }
-        .stat-icon.down { background: #e74c3c; }
+        .stat-icon.down { background:rgb(157, 141, 139); }
         .stat-icon.paused { background: #95a5a6; }
 
         .stat-info h3 {
