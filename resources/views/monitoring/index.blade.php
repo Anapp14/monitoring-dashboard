@@ -340,6 +340,44 @@
             gap: 15px;
         }
 
+       html {
+            font-size: clamp(16px, 1.3vw, 20px); /* Ukuran dasar diperbesar */
+        }
+
+        h1 {
+            font-size: clamp(2rem, 3vw, 3rem);
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 2.2vw, 2.5rem);
+        }
+
+        h3 {
+            font-size: clamp(1.3rem, 1.8vw, 2rem);
+        }
+
+        p, td, th, span, a {
+            font-size: clamp(1rem, 1.2vw, 1.5rem);
+        }
+
+        .dashboard-link {
+            padding: clamp(10px, 1.2vw, 16px) clamp(14px, 2vw, 24px);
+            font-size: clamp(1rem, 1.2vw, 1.5rem);
+        }
+
+        .refresh-timer {
+            font-size: clamp(1rem, 1.2vw, 1.3rem);
+        }
+
+        .connection-status {
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
+        }
+
+        .uptime-percent {
+            font-size: clamp(0.9rem, 1.1vw, 1.3rem);
+        }
+
+
     </style>
 </head>
 <body>

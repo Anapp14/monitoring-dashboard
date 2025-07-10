@@ -6,6 +6,11 @@
     <title>Admin Dashboard - Monitor Status</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
+
+        html {
+            font-size: clamp(14px, 0.85vw, 18px); /* skala responsif */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -45,9 +50,10 @@
 
         .header h1 {
             color: #2c3e50;
-            font-size: 24px;
+            font-size: clamp(18px, 1.8vw, 26px);
             font-weight: 600;
         }
+        
 
         .refresh-info {
             display: flex;
@@ -69,7 +75,7 @@
             color: white;
             padding: 8px 12px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: clamp(12px, 0.9vw, 16px);
             font-weight: bold;
         }
 
@@ -79,7 +85,7 @@
             text-decoration: none;
             padding: 8px 16px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: clamp(12px, 0.9vw, 16px);
             font-weight: bold;
             transition: background 0.3s ease;
         }
@@ -91,7 +97,7 @@
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: clamp(12px, 0.9vw, 16px);
         }
 
         .refresh-btn:hover {
@@ -107,21 +113,21 @@
 
         .stat-card {
             background: white;
-            padding: 20px;
+            padding: 10px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
         .stat-number {
-            font-size: 32px;
+            font-size: clamp(20px, 2vw, 36px);
             font-weight: 700;
             margin-bottom: 5px;
         }
 
         .stat-label {
             color: #7f8c8d;
-            font-size: 14px;
+            font-size: clamp(12px, 0.8vw, 16px);
             text-transform: uppercase;
             font-weight: 500;
         }
@@ -148,7 +154,7 @@
 
         .monitors-header h2 {
             color: #2c3e50;
-            font-size: 18px;
+            font-size: clamp(16px, 1.5vw, 24px);
             font-weight: 600;
         }
 
@@ -223,14 +229,14 @@
         }
 
         .monitor-name {
-            font-size: 16px;
+            font-size: clamp(14px, 1vw, 18px);
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 4px;
         }
 
         .monitor-type {
-            font-size: 12px;
+            font-size: clamp(10px, 0.7vw, 14px);
             color: #7f8c8d;
             text-transform: uppercase;
         }
@@ -241,7 +247,7 @@
             gap: 8px;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: clamp(10px, 0.7vw, 14px);
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -320,10 +326,10 @@
             background: #e74c3c;
             color: white;
             padding: 0.6rem 1rem;
-            font-size: 0.85rem;
+            font-size: clamp(12px, 0.9vw, 16px);
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-            max-width: 280px;
+            max-width: clamp(240px, 15vw, 320px);
             white-space: pre-line;
             word-wrap: break-word;
             animation: slideIn 0.3s ease forwards;
