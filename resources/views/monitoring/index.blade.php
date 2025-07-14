@@ -9,11 +9,12 @@
         .dashboard-link {
             background:rgb(94, 95, 96);
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: bold;
             transition: background-color 0.3s ease;
+            font-size: 0.85rem;
         }
 
         * {
@@ -41,16 +42,17 @@
             justify-content: space-between;
             align-items: center;
             color: white;
+            width: 100%;
         }
 
         .title h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
         }
 
         .title p {
             opacity: 0.8;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .refresh-timer {
@@ -58,14 +60,15 @@
             align-items: center;
             gap: 10px;
             background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 8px;
+            font-size: 0.85rem;
         }
 
         .container {
-            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
-            padding: 0.5rem 0.5rem;
+            padding: 0.7rem;
             height: calc(100vh - 80px);
             display: flex;
             flex-direction: column;
@@ -73,30 +76,31 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
             flex-shrink: 0;
         }
 
         .stat-card {
             background: white;
-            padding: 0.2rem;
-            border-radius: 12px;
+            padding: 0.7rem;
+            border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
+            min-height: 70px;
         }
 
         .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: white;
         }
 
@@ -106,15 +110,16 @@
         .stat-icon.paused { background: #95a5a6; }
 
         .stat-info h3 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: #2c3e50;
         }
 
         .stat-info p {
             color: #7f8c8d;
-            font-size: 0.9rem;
+            font-size: 1rem;
             text-transform: uppercase;
+            font-weight: 500;
         }
 
         .monitors-section {
@@ -129,7 +134,7 @@
         }
 
         .monitors-header {
-            padding: 1rem 1.5rem;
+            padding: 1.2rem 1.5rem;
             border-bottom: 1px solid #ecf0f1;
             flex-shrink: 0;
             display: flex;
@@ -139,13 +144,14 @@
 
         .monitors-header h2 {
             color: #2c3e50;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
         .connection-status {
-            padding: 0.25rem 0.75rem;
+            padding: 0.4rem 1rem;
             border-radius: 15px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 600;
         }
 
@@ -169,11 +175,12 @@
         .monitors-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 1rem;
         }
 
         .monitors-table th,
         .monitors-table td {
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             text-align: left;
             border-bottom: 1px solid #ecf0f1;
         }
@@ -185,14 +192,15 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            font-size: 1.1rem;
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
         .status-up { background: #2ecc71; }
@@ -205,9 +213,10 @@
         }
 
         .uptime-percent {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
         .uptime-perfect {
@@ -239,6 +248,7 @@
             text-align: center;
             padding: 2rem;
             color: #7f8c8d;
+            font-size: 1.1rem;
         }
 
         .error-message {
@@ -248,6 +258,7 @@
             background: #ffeaea;
             border-radius: 8px;
             margin: 1rem;
+            font-size: 1.1rem;
         }
 
         /* Notification styles */
@@ -256,27 +267,26 @@
             margin-bottom: 10px;
             background: #e74c3c;
             color: white;
-            padding: 0.6rem 1rem;
-            font-size: 0.85rem;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.95rem;
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-            max-width: 280px;
+            max-width: 300px;
             white-space: pre-line;
             word-wrap: break-word;
             animation: slideIn 0.3s ease forwards;
         }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
         .notification.show {
             transform: translateX(0);
@@ -285,7 +295,7 @@
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
-                height: calc(100vh - 60px);
+                height: calc(100vh - 80px);
             }
             
             .stats-grid {
@@ -296,6 +306,17 @@
             
             .stat-card {
                 padding: 1rem;
+                min-height: 100px;
+            }
+            
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.8rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 2rem;
             }
             
             .monitors-header {
@@ -306,14 +327,15 @@
             
             .monitors-table th,
             .monitors-table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
+                padding: 1rem 0.75rem;
+                font-size: 1.5rem;
             }
 
             .notification {
                 right: 10px;
                 left: 10px;
                 transform: translateY(-100px);
+                max-width: none;
             }
 
             .notification.show {
@@ -340,44 +362,99 @@
             gap: 15px;
         }
 
-       html {
-            font-size: clamp(16px, 1.3vw, 20px); /* Ukuran dasar diperbesar */
+        /* Untuk layar besar (1080p ke atas) */
+        @media (min-width: 1920px) {
+            .title h1 {
+                font-size: 2.2rem;
+            }
+            
+            .title p {
+                font-size: 1.2rem;
+            }
+            
+            .refresh-timer {
+                font-size: 1.2rem;
+                padding: 0.8rem 1.3rem;
+            }
+            
+            .dashboard-link {
+                font-size: 1.2rem;
+                padding: 12px 24px;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .stat-card {
+                padding: 1.5rem;
+                min-height: 130px;
+            }
+            
+            .stat-icon {
+                width: 65px;
+                height: 65px;
+                font-size: 2.2rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 3rem;
+            }
+            
+            .stat-info p {
+                font-size: 1.2rem;
+            }
+            
+            .monitors-table {
+                font-size: 1.2rem;
+            }
+            
+            .monitors-table th,
+            .monitors-table td {
+                padding: 1.5rem 1.2rem;
+                font-size: 2rem;
+            }
+            
+            .monitors-table th {
+                font-size: 1.6rem;
+            }
+            
+            .monitors-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .connection-status {
+                font-size: 1.5rem;
+                padding: 0.5rem 1.2rem;
+            }
+            
+            .uptime-percent {
+                font-size: 1.5rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .status-indicator {
+                width: 16px;
+                height: 16px;
+                margin-right: 12px;
+            }
+            
+            /* Responsive notification untuk layar 1080p ke atas */
+            .notification {
+                font-size: 1.8rem;
+                padding: 1.5rem 2rem;
+                max-width: 550px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            }
         }
-
-        h1 {
-            font-size: clamp(2rem, 3vw, 3rem);
-        }
-
-        h2 {
-            font-size: clamp(1.5rem, 2.2vw, 2.5rem);
-        }
-
-        h3 {
-            font-size: clamp(1.3rem, 1.8vw, 2rem);
-        }
-
-        p, td, th, span, a {
-            font-size: clamp(1rem, 1.2vw, 1.5rem);
-        }
-
-        .dashboard-link {
-            padding: clamp(10px, 1.2vw, 16px) clamp(14px, 2vw, 24px);
-            font-size: clamp(1rem, 1.2vw, 1.5rem);
-        }
-
-        .refresh-timer {
-            font-size: clamp(1rem, 1.2vw, 1.3rem);
-        }
-
-        .connection-status {
-            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
-        }
-
-        .uptime-percent {
-            font-size: clamp(0.9rem, 1.1vw, 1.3rem);
-        }
-
-
     </style>
 </head>
 <body>
@@ -462,14 +539,8 @@
         </div>
     </div>
 
-    <!-- Notification element -->
-    {{-- <div id="notification" class="notification">
-        <span id="notification-text"></span>
-    </div> --}}
-
     <!-- Notification container -->
     <div id="notification-container" style="position: fixed; top: 100px; right: 20px; z-index: 1000;"></div>
-
 
     <script>
         let countdown = 30;
@@ -560,7 +631,6 @@
 
             notif.innerText = message; // agar \n jadi baris baru
 
-
             container.appendChild(notif);
 
             setTimeout(() => {
@@ -569,7 +639,6 @@
                 setTimeout(() => container.removeChild(notif), 500);
             }, timeout);
         }
-
 
         // Update connection status
         function updateConnectionStatus(connected, message = '') {
@@ -648,7 +717,6 @@
                     downMonitors.push(monitor.friendly_name);
                 }
 
-
                 // Generate cells for last 7 days uptime
                 let last7DaysCells = '';
                 monitor.last_7_days.forEach(day => {
@@ -677,7 +745,6 @@
                     ${last7DaysCells}
                 `;
 
-                
                 tbody.appendChild(row);
             });
 
@@ -687,7 +754,6 @@
                     showNotification(`🔴 Monitor "${name}" is DOWN!`, 'warning');
                 });
             }
-
         }
 
         // Initialize
@@ -696,7 +762,6 @@
             setInterval(updateCountdown, 1000);
             setTimeout(autoScroll, 3000); // Mulai scroll otomatis setelah 3 detik
         });
-
     </script>
 </body>
 </html>
