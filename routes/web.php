@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,16 @@ Route::get('/', [MonitoringController::class, 'index'])->name('monitoring.index'
 Route::get('/api/monitoring', [MonitoringController::class, 'getMonitoringData'])->name('monitoring.data');
 //Admin dashboard
 Route::get('/admin-dashboard', [MonitoringController::class, 'adminDashboard'])->name('monitoring.admin');
+
+// New route for month dashboard
+Route::get('/month-dashboard', [MonitoringController::class, 'monthDashboard']);
+
+// NEW: Group dashboard routes
+Route::get('/group-dashboard', [MonitoringController::class, 'groupDashboard']);
+
+// NEW: Group monitoring API
+Route::get('/api/group-monitoring-data', [MonitoringController::class, 'getGroupMonitoringData']);
+
 Route::get('/api/test', function () {
     function groupByDate($heartbeats) {
     $result = [];
@@ -92,3 +103,14 @@ foreach ($monitorList as $monitor) {
 
     dd($monitorMerged);
 });
+
+Route::prefix('api/groups')->group(function () {
+    Route::get('/', [GroupController::class, 'index']);
+    Route::post('/', [GroupController::class, 'store']);
+    Route::put('/{id}', [GroupController::class, 'update']);
+    Route::delete('/{id}', [GroupController::class, 'destroy']);
+    Route::post('/{id}/assign', [GroupController::class, 'assignMonitor']);
+    Route::post('/{id}/remove', [GroupController::class, 'removeMonitor']);
+});
+
+Route::get('/dashboard', [MonitoringController::class, 'dashboard']);

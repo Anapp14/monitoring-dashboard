@@ -27,3 +27,8 @@ Route::get('/monitoring-data', [MonitoringController::class, 'getMonitoringData'
     ->middleware(['web']);
 
 Route::get('/admin-monitoring-data', [MonitoringController::class, 'getAdminMonitoringData'])->name('api.admin.monitoring.data');
+
+// routes/api.php
+Route::get('/monitoring-data-month', [MonitoringController::class, 'getMonthMonitoringData']);
+
+

@@ -349,6 +349,25 @@
             animation: slideOutToRight 0.3s ease forwards;
         }
 
+        @keyframes blink-red-green {
+            0% { background-color: red; color: white; }
+            50% { background-color: white; color: black; }
+            100% { background-color: red; color: white; }
+        }
+
+        .blinking {
+            animation: blink-red-green 1s infinite;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .right-tools {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -404,25 +423,6 @@
                 flex-direction: column;
                 gap: 10px;
             }
-        }
-
-        @keyframes blink-red-green {
-            0% { background-color: red; color: white; }
-            50% { background-color: white; color: black; }
-            100% { background-color: red; color: white; }
-        }
-
-        .blinking {
-            animation: blink-red-green 1s infinite;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-
-        .right-tools {
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
         /* Untuk layar besar (1080p ke atas) */
@@ -523,7 +523,7 @@
     <div class="header">
         <div class="title">
             <h1>AINO</h1>
-            <p>System Monitoring - Uptime Kuma (7 Days)</p>
+            <p>System Monitoring - Uptime Kuma (30 Days)</p>
         </div>
         <div class="right-tools">
             <div class="refresh-timer">
@@ -531,8 +531,7 @@
                 <span id="countdown">30</span>
                 <span>secs</span>
             </div>
-            <a href="/group-dashboard" class="dashboard-link">Group Dashboard</a>
-            <a href="/month-dashboard" class="dashboard-link">Month Dashboard</a>
+            <a href="/" class="dashboard-link">Weekly Dashboard</a>
             <a href="/admin-dashboard" class="dashboard-link">Admin Dashboard</a>
         </div>
     </div>
@@ -581,7 +580,7 @@
                     <thead>
                         <tr>
                             <th>Status</th>
-                            <th>Avg 7 Days</th>
+                            <th>Avg 30 Days</th>
                             <th>Type</th>
                             <th id="date-header-0">-</th>
                             <th id="date-header-1">-</th>
@@ -808,7 +807,7 @@
         // Fetch monitoring data
         async function fetchMonitoringData() {
             try {
-                const response = await fetch('/api/monitoring-data', {
+                const response = await fetch('/api/monitoring-data-month', {
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
@@ -880,8 +879,8 @@
                     `;
                 });
 
-                // Average 7 days cell
-                const avgUptimeClass = getUptimeClass(monitor.average_7_days);
+                // Average 30 days cell
+                const avgUptimeClass = getUptimeClass(monitor.average_30_days);
                 const blinkClass = monitor.status === 0 ? 'blinking' : '';
 
                 row.innerHTML = `
@@ -890,7 +889,7 @@
                         ${monitor.friendly_name}
                     </td>
                     <td class="uptime-cell">
-                        <span class="uptime-percent ${avgUptimeClass}">${monitor.average_7_days}%</span>
+                        <span class="uptime-percent ${avgUptimeClass}">${monitor.average_30_days}%</span>
                     </td>
                     <td>${monitor.type}</td>
                     ${last7DaysCells}
