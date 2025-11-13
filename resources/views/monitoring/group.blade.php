@@ -79,7 +79,8 @@
             width: 100%;
             margin: 0 auto;
             padding: 0.7rem;
-            height: calc(100vh - 80px);
+            padding-bottom: 1.5rem;
+            min-height: calc(100vh - 80px);
             display: flex;
             flex-direction: column;
         }
@@ -719,6 +720,13 @@
         let selectedGroupForAssign = null;
         let monitorToAssign = null;
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        // State persistence untuk UI
+        let uiState = {
+            collapsedGroups: new Set(),
+            scrollPosition: 0,
+            isAddFormOpen: false
+        };
 
         function updateCountdown() {
             document.getElementById('countdown').textContent = countdown;
@@ -799,6 +807,7 @@
         function toggleAddGroupForm() {
             const form = document.getElementById('addGroupForm');
             form.classList.toggle('active');
+            uiState.isAddFormOpen = form.classList.contains('active');
             if (form.classList.contains('active')) {
                 document.getElementById('groupNameInput').focus();
             }
@@ -875,12 +884,19 @@
             }
         }
 
-        function toggleGroup(groupIndex) {
-            const content = document.getElementById(`group-content-${groupIndex}`);
-            const icon = document.getElementById(`collapse-icon-${groupIndex}`);
+        function toggleGroup(groupId) {
+            const content = document.getElementById(`group-content-${groupId}`);
+            const icon = document.getElementById(`collapse-icon-${groupId}`);
             
             content.classList.toggle('collapsed');
             icon.classList.toggle('collapsed');
+            
+            // Simpan state collapsed berdasarkan group ID, bukan index
+            if (content.classList.contains('collapsed')) {
+                uiState.collapsedGroups.add(groupId);
+            } else {
+                uiState.collapsedGroups.delete(groupId);
+            }
         }
 
         function showAssignModal(monitorId) {
@@ -1049,8 +1065,15 @@
         }
 
         function renderGroups() {
+            // Simpan scroll position sebelum render
+            const scrollContainer = document.getElementById('groupsScrollContainer');
+            uiState.scrollPosition = scrollContainer.scrollTop;
+            
             const container = document.getElementById('groupsScrollContainer');
             container.innerHTML = '';
+
+            // Sort groups SEBELUM loop, bukan di dalam loop!
+            groups.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 
             // Render user-created groups
             groups.forEach((group, groupIndex) => {
@@ -1073,8 +1096,13 @@
                     monitorsHTML += '</div>';
                 }
 
+                // Check jika grup ini collapsed berdasarkan GROUP ID
+                const isCollapsed = uiState.collapsedGroups.has(group.id);
+                const collapsedClass = isCollapsed ? 'collapsed' : '';
+                const iconClass = isCollapsed ? 'collapsed' : '';
+
                 groupDiv.innerHTML = `
-                    <div class="group-header" onclick="toggleGroup(${groupIndex})">
+                    <div class="group-header" onclick="toggleGroup(${group.id})">
                         <div class="group-title">
                             <h2>${group.name}</h2>
                             <div class="group-stats">
@@ -1086,10 +1114,10 @@
                         <div class="group-actions">
                             <span class="uptime-value ${uptimeClass}">${average}% Avg</span>
                             <button class="delete-group-btn" onclick="event.stopPropagation(); deleteGroup(${group.id})">🗑️</button>
-                            <span class="collapse-icon" id="collapse-icon-${groupIndex}">▼</span>
+                            <span class="collapse-icon ${iconClass}" id="collapse-icon-${group.id}">▼</span>
                         </div>
                     </div>
-                    <div class="group-content" id="group-content-${groupIndex}">
+                    <div class="group-content ${collapsedClass}" id="group-content-${group.id}">
                         ${monitorsHTML}
                     </div>
                 `;
@@ -1117,6 +1145,11 @@
                 });
                 ungroupedHTML += '</div>';
 
+                // Check jika ungrouped collapsed
+                const isCollapsed = uiState.collapsedGroups.has('ungrouped');
+                const collapsedClass = isCollapsed ? 'collapsed' : '';
+                const iconClass = isCollapsed ? 'collapsed' : '';
+
                 ungroupedDiv.innerHTML = `
                     <div class="group-header" onclick="toggleGroup('ungrouped')">
                         <div class="group-title">
@@ -1129,10 +1162,10 @@
                         </div>
                         <div class="group-actions">
                             <span class="uptime-value ${uptimeClass}">${ungroupedAverage}% Avg</span>
-                            <span class="collapse-icon" id="collapse-icon-ungrouped">▼</span>
+                            <span class="collapse-icon ${iconClass}" id="collapse-icon-ungrouped">▼</span>
                         </div>
                     </div>
-                    <div class="group-content" id="group-content-ungrouped">
+                    <div class="group-content ${collapsedClass}" id="group-content-ungrouped">
                         ${ungroupedHTML}
                     </div>
                 `;
@@ -1143,6 +1176,16 @@
             // Show empty state if no monitors at all
             if (allMonitors.length === 0) {
                 container.innerHTML = '<div class="loading">No monitors found in Uptime Kuma</div>';
+            }
+            
+            // Restore scroll position setelah render
+            setTimeout(() => {
+                scrollContainer.scrollTop = uiState.scrollPosition;
+            }, 0);
+            
+            // Restore form state
+            if (uiState.isAddFormOpen) {
+                document.getElementById('addGroupForm').classList.add('active');
             }
         }
 
